@@ -11,6 +11,7 @@ const userSchema=mongoose.Schema(
             type:String,
             required:true,
         },
+        startDate:{type:Date,default:Date.now}//Auto set when user signs up
     },
     {
         timestamps:true,

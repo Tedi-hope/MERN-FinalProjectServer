@@ -3,6 +3,7 @@ import { User } from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config.js';
+import { getMembershipDuration } from '../utils/userUtils.js';
 
 const router=express.Router();
 
@@ -21,7 +22,6 @@ router.post('/signup',async(request,response)=>{
         password:hashedPassword
       });
 
-      //console.log(nuser);
       return response.status(201).json({message:'Signup Successful!'});
     }
     catch(error){
@@ -29,6 +29,23 @@ router.post('/signup',async(request,response)=>{
         response.status(500).send({message:error.message});
     }
 })
+
+router.get('/membership-duration/:email',async(req,res)=>{
+  try{
+     const {email}=req.params;
+     const result=await getMembershipDuration(email);
+   if(result.error){
+     return res.status(404).json({message:result.error});
+    }
+    //return res.json({message:`User has been a member for ${result.durationInDays} days`})
+    return res.json({ durationInDays: result.durationInDays });
+ }
+catch(error){
+ console.log(error.message);
+ res.status(500).send({message:error.message});
+ //res.status(500).json({ message: error.message, durationInDays: 0 }); // Return duration with an error message
+}
+});
 
 router.post('/login',async(request,response)=>{
     try{
